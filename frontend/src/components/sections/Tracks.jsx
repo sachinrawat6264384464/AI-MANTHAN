@@ -52,17 +52,15 @@ function useInView(ref, threshold = 0.15) {
   return inView
 }
 
-/* ── Domain Card with slide-in direction + card-heading typing ── */
+/* ── Domain Card ── */
 function DomainCard({ domain, index, inView }) {
   const tone = ACCENT_TONE[domain.accent] || ACCENT_TONE.cyan
   const psCount = domain.statements.length
-  const fromLeft = index % 2 === 0          // even cards from left, odd from right
-  const slideDelay = Math.floor(index / 2) * 120  // stagger by row
+  const fromLeft = index % 2 === 0
+  const slideDelay = Math.floor(index / 2) * 120
 
-  // Each card observes itself so its h3 types as it enters viewport
   const cardRef = useRef(null)
   const cardInView = useInView(cardRef, 0.3)
-  // Extra delay so typing starts after card slides in
   const typingTrigger = cardInView && inView
   const typedLabel = useTypingEffect(domain.label, typingTrigger, 65)
 
@@ -103,12 +101,112 @@ function DomainCard({ domain, index, inView }) {
         <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.16em] text-zinc-500 truncate">
           {psCount > 0 ? `${psCount} Problem${psCount > 1 ? 's' : ''}` : 'Domain'}
         </span>
-        {/* <span
-          className="material-symbols-outlined text-[14px] sm:text-[16px] text-zinc-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-white shrink-0"
-          aria-hidden="true"
+      </div>
+    </div>
+  )
+}
+
+/* ── Horizontal Scrollable Track Grid ── */
+function TrackGrid({ domains, inView }) {
+  const scrollRef = useRef(null)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  const itemsPerPage = 6 // 3x2 grid
+  const totalPages = Math.ceil(domains.length / itemsPerPage)
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (!scrollRef.current) return
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
+      setCanScrollLeft(scrollLeft > 10)
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
+    }
+    checkScroll()
+    window.addEventListener('resize', checkScroll)
+    return () => window.removeEventListener('resize', checkScroll)
+  }, [])
+
+  const scrollToPage = (page) => {
+    if (!scrollRef.current) return
+    const cardWidth = 360 // approximate card width including gap
+    const scrollLeft = page * cardWidth * 3 // 3 cards per row
+    scrollRef.current.scrollTo({ left: scrollLeft, behavior: 'smooth' })
+    setCurrentPage(page)
+  }
+
+  const scrollLeft = () => {
+    if (currentPage > 0) scrollToPage(currentPage - 1)
+  }
+  const scrollRight = () => {
+    if (currentPage < totalPages - 1) scrollToPage(currentPage + 1)
+  }
+
+  return (
+    <div className="relative">
+      {/* Scrollable grid */}
+      <div
+        ref={scrollRef}
+        className="flex gap-3.5 sm:gap-5 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0"
+        style={{ scrollSnapType: 'x mandatory' }}
+        onScroll={(e) => {
+          const { scrollLeft, clientWidth, scrollWidth } = e.currentTarget
+          const cardWidth = 360
+          const page = Math.round(scrollLeft / (cardWidth * 3))
+          setCurrentPage(Math.max(0, Math.min(page, totalPages - 1)))
+        }}
+      >
+        {domains.map((domain, i) => (
+          <div
+            key={domain.id}
+            className="snap-start shrink-0 w-[300px] sm:w-[320px] lg:w-[340px]"
+            style={{ scrollSnapAlign: 'start' }}
+          >
+            <DomainCard domain={domain} index={i} inView />
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination dots */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1.5 mt-4">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => scrollToPage(i)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                i === currentPage
+                  ? 'bg-cyan-400 w-6'
+                  : 'bg-white/15 hover:bg-white/30'
+              }`}
+              aria-label={`Go to page ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Navigation arrows */}
+      <div className="flex items-center justify-center gap-3 mt-4">
+        <button
+          onClick={scrollLeft}
+          disabled={!canScrollLeft}
+          className="p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+          aria-label="Previous tracks"
         >
-          arrow_forward
-        </span> */}
+          <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+        </button>
+        <span className="text-xs font-mono text-zinc-500 px-2">
+          {currentPage + 1} / {totalPages}
+        </span>
+        <button
+          onClick={scrollRight}
+          disabled={!canScrollRight}
+          className="p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
+          aria-label="Next tracks"
+        >
+          <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+        </button>
       </div>
     </div>
   )
@@ -116,11 +214,10 @@ function DomainCard({ domain, index, inView }) {
 
 export default function Tracks() {
   const headingRef = useRef(null)
-  const gridRef    = useRef(null)
   const headingInView = useInView(headingRef, 0.4)
-  const gridInView    = useInView(gridRef, 0.05)
+  const gridInView = useInView(null, 0.05) // trigger grid animation immediately
 
-  const FULL_HEADING = 'THE  9  TRACKS'
+  const FULL_HEADING = 'THE  13  TRACKS'
   const typed = useTypingEffect(FULL_HEADING, headingInView, 120)
 
   return (
@@ -136,7 +233,6 @@ export default function Tracks() {
           </p>
           <h2 className="mt-1.5 font-mono text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white uppercase min-h-[1.2em]">
             {typed}
-            {/* blinking cursor while typing */}
             {typed.length < FULL_HEADING.length && headingInView && (
               <span className="inline-block w-[3px] h-[0.85em] bg-cyan-400 ml-1 align-middle animate-pulse" />
             )}
@@ -151,15 +247,8 @@ export default function Tracks() {
         </p>
       </div>
 
-      {/* ── 9-domain grid ── */}
-      <div
-        ref={gridRef}
-        className="tracks-grid grid grid-cols-1 min-[460px]:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5"
-      >
-        {domains.map((domain, i) => (
-          <DomainCard key={domain.id} domain={domain} index={i} inView={gridInView} />
-        ))}
-      </div>
+      {/* ── Horizontally scrollable 3x2 track grid ── */}
+      <TrackGrid domains={domains} inView={gridInView} />
 
       {/* ── View All CTA ── */}
       <div className={`mt-10 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 transition-all duration-700 delay-500 ${gridInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
