@@ -122,7 +122,7 @@ export default function Story() {
             </div>
             <div className="flex items-center gap-2 bg-[#090d14] border border-white/10 px-3.5 py-2 rounded-lg">
               <Icon name="military_tech" className="text-sm text-white" />
-              <span>9 AI Domains</span>
+              <span>13 AI Domains</span>
             </div>
             <div className="flex items-center gap-2 bg-[#090d14] border border-white/10 px-3.5 py-2 rounded-lg">
               <Icon name="location_on" className="text-sm text-white" />

@@ -1,25 +1,11 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Section from '../ui/Section'
+import Icon from '../ui/Icon'
 import { domains } from '../../data/tracks'
 
-const ACCENT_TONE = {
-  azure:   { text: 'text-cyan-300',    bg: 'bg-cyan-500/10',    border: 'hover:border-cyan-400/40' },
-  emerald: { text: 'text-emerald-300', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-400/40' },
-  pink:    { text: 'text-pink-300',    bg: 'bg-pink-500/10',    border: 'hover:border-pink-400/40' },
-  cyan:    { text: 'text-cyan-300',    bg: 'bg-cyan-500/10',    border: 'hover:border-cyan-400/40' },
-  lime:    { text: 'text-lime-300',    bg: 'bg-lime-500/10',    border: 'hover:border-lime-400/40' },
-  amber:   { text: 'text-amber-300',   bg: 'bg-amber-500/10',   border: 'hover:border-amber-400/40' },
-  orange:  { text: 'text-orange-300',  bg: 'bg-orange-500/10',  border: 'hover:border-orange-400/40' },
-  green:   { text: 'text-green-300',   bg: 'bg-green-500/10',   border: 'hover:border-green-400/40' },
-  sky:     { text: 'text-sky-300',     bg: 'bg-sky-500/10',     border: 'hover:border-sky-400/40' },
-  indigo:  { text: 'text-indigo-300',  bg: 'bg-indigo-500/10',  border: 'hover:border-indigo-400/40' },
-  red:     { text: 'text-red-300',     bg: 'bg-red-500/10',     border: 'hover:border-red-400/40' },
-}
-
-/* ── Typing effect hook ── */
 function useTypingEffect(text, trigger, speed = 55) {
   const [displayed, setDisplayed] = useState('')
   useEffect(() => {
@@ -36,23 +22,32 @@ function useTypingEffect(text, trigger, speed = 55) {
   return displayed
 }
 
-/* ── IntersectionObserver hook ── */
 function useInView(ref, threshold = 0.15) {
   const [inView, setInView] = useState(false)
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } },
-      { threshold }
-    )
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } }, { threshold })
     obs.observe(el)
     return () => obs.disconnect()
   }, [ref, threshold])
   return inView
 }
 
-/* ── Domain Card ── */
+const ACCENT_TONE = {
+  azure:   { text: 'text-cyan-300',    bg: 'bg-cyan-500/10',    border: 'hover:border-cyan-400/40' },
+  emerald: { text: 'text-emerald-300', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-400/40' },
+  pink:    { text: 'text-pink-300',    bg: 'bg-pink-500/10',    border: 'hover:border-pink-400/40' },
+  cyan:    { text: 'text-cyan-300',    bg: 'bg-cyan-500/10',    border: 'hover:border-cyan-400/40' },
+  lime:    { text: 'text-lime-300',    bg: 'bg-lime-500/10',    border: 'hover:border-lime-400/40' },
+  amber:   { text: 'text-amber-300',   bg: 'bg-amber-500/10',   border: 'hover:border-amber-400/40' },
+  orange:  { text: 'text-orange-300',  bg: 'bg-orange-500/10',  border: 'hover:border-orange-400/40' },
+  green:   { text: 'text-green-300',   bg: 'bg-green-500/10',   border: 'hover:border-green-400/40' },
+  sky:     { text: 'text-sky-300',     bg: 'bg-sky-500/10',     border: 'hover:border-sky-400/40' },
+  indigo:  { text: 'text-indigo-300',  bg: 'bg-indigo-500/10',  border: 'hover:border-indigo-400/40' },
+  red:     { text: 'text-red-300',     bg: 'bg-red-500/10',     border: 'hover:border-red-400/40' },
+}
+
 function DomainCard({ domain, index, inView }) {
   const tone = ACCENT_TONE[domain.accent] || ACCENT_TONE.cyan
   const psCount = domain.statements.length
@@ -67,23 +62,18 @@ function DomainCard({ domain, index, inView }) {
   return (
     <div
       ref={cardRef}
-      className={`group relative flex flex-col rounded-2xl border border-white/10 bg-[#090d14] p-3.5 sm:p-6
-        transition-all duration-700 ease-out
-        hover:-translate-y-1.5 hover:bg-[#0e1420] hover:border-cyan-400/40
-        hover:shadow-[0_16px_36px_-12px_rgba(0,240,255,0.18)]
+      className={`group relative flex flex-col rounded-2xl border border-white/10 bg-[#090d14] p-3.5 sm:p-6 min-h-[280px] sm:min-h-[300px]
+        transition-all duration-500 ease-out
+        hover:-translate-y-1 hover:bg-[#0e1420] hover:border-cyan-400/40
+        hover:shadow-[0_20px_40px_-10px_rgba(0,240,255,0.2)]
         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400
         ${inView ? 'opacity-100 translate-x-0' : fromLeft ? 'opacity-0 -translate-x-16' : 'opacity-0 translate-x-16'}
       `}
       style={{ transitionDelay: inView ? `${slideDelay}ms` : '0ms' }}
     >
       <div className="flex items-start justify-between gap-2 sm:gap-3">
-        <span
-          className={`grid h-9 w-9 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-xl border border-white/10 ${tone.bg} ${tone.text} transition-transform duration-300 group-hover:scale-110`}
-        >
+        <span className={`grid h-9 w-9 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-xl border border-white/10 ${tone.bg} ${tone.text} transition-transform duration-300 group-hover:scale-110`}>
           <span className="material-symbols-outlined text-[18px] sm:text-[22px]">{domain.icon}</span>
-        </span>
-        <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.2em] text-cyan-400/80 group-hover:text-cyan-300 transition-colors">
-          {domain.number}
         </span>
       </div>
 
@@ -106,129 +96,44 @@ function DomainCard({ domain, index, inView }) {
   )
 }
 
-/* ── Horizontal Scrollable Track Grid ── */
 function TrackGrid({ domains, inView }) {
   const scrollRef = useRef(null)
-  const [currentPage, setCurrentPage] = useState(0)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-
-  const itemsPerPage = 6 // 3x2 grid
-  const totalPages = Math.ceil(domains.length / itemsPerPage)
-
-  useEffect(() => {
-    const checkScroll = () => {
-      if (!scrollRef.current) return
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setCanScrollLeft(scrollLeft > 10)
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
-    }
-    checkScroll()
-    window.addEventListener('resize', checkScroll)
-    return () => window.removeEventListener('resize', checkScroll)
-  }, [])
-
-  const scrollToPage = (page) => {
-    if (!scrollRef.current) return
-    const cardWidth = 360 // approximate card width including gap
-    const scrollLeft = page * cardWidth * 3 // 3 cards per row
-    scrollRef.current.scrollTo({ left: scrollLeft, behavior: 'smooth' })
-    setCurrentPage(page)
-  }
-
-  const scrollLeft = () => {
-    if (currentPage > 0) scrollToPage(currentPage - 1)
-  }
-  const scrollRight = () => {
-    if (currentPage < totalPages - 1) scrollToPage(currentPage + 1)
-  }
 
   return (
     <div className="relative">
-      {/* Scrollable grid */}
       <div
         ref={scrollRef}
-        className="flex gap-3.5 sm:gap-5 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0"
-        style={{ scrollSnapType: 'x mandatory' }}
-        onScroll={(e) => {
-          const { scrollLeft, clientWidth, scrollWidth } = e.currentTarget
-          const cardWidth = 360
-          const page = Math.round(scrollLeft / (cardWidth * 3))
-          setCurrentPage(Math.max(0, Math.min(page, totalPages - 1)))
+        className="grid grid-rows-2 gap-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 min-h-[580px] sm:min-h-[620px]"
+        style={{
+          scrollSnapType: 'x mandatory',
+          gridAutoFlow: 'column',
+          gridAutoColumns: '360px'
         }}
       >
         {domains.map((domain, i) => (
-          <div
-            key={domain.id}
-            className="snap-start shrink-0 w-[300px] sm:w-[320px] lg:w-[340px]"
-            style={{ scrollSnapAlign: 'start' }}
-          >
+          <div key={domain.id} className="snap-start shrink-0 w-full" style={{ scrollSnapAlign: 'start' }}>
             <DomainCard domain={domain} index={i} inView />
           </div>
         ))}
-      </div>
-
-      {/* Pagination dots */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 mt-4">
-          {Array.from({ length: totalPages }).map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToPage(i)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                i === currentPage
-                  ? 'bg-cyan-400 w-6'
-                  : 'bg-white/15 hover:bg-white/30'
-              }`}
-              aria-label={`Go to page ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Navigation arrows */}
-      <div className="flex items-center justify-center gap-3 mt-4">
-        <button
-          onClick={scrollLeft}
-          disabled={!canScrollLeft}
-          className="p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-          aria-label="Previous tracks"
-        >
-          <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-        </button>
-        <span className="text-xs font-mono text-zinc-500 px-2">
-          {currentPage + 1} / {totalPages}
-        </span>
-        <button
-          onClick={scrollRight}
-          disabled={!canScrollRight}
-          className="p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
-          aria-label="Next tracks"
-        >
-          <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-        </button>
       </div>
     </div>
   )
 }
 
-export default function Tracks() {
+function Tracks() {
   const headingRef = useRef(null)
+  const gridRef = useRef(null)
   const headingInView = useInView(headingRef, 0.4)
-  const gridInView = useInView(null, 0.05) // trigger grid animation immediately
+  const gridInView = useInView(gridRef, 0.05)
 
-  const FULL_HEADING = 'THE  13  TRACKS'
+  const FULL_HEADING = 'THE 13 TRACKS'
   const typed = useTypingEffect(FULL_HEADING, headingInView, 120)
 
   return (
     <Section id="tracks" className="!bg-[#06080d]">
-      {/* ── heading row ── */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10" ref={headingRef}>
         <div>
-          <p
-            className={`text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-[0.32em] text-cyan-400
-              transition-all duration-700 ${headingInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-          >
+          <p className={`text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-[0.32em] text-cyan-400 transition-all duration-700 ${headingInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             Problem Domains
           </p>
           <h2 className="mt-1.5 font-mono text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white uppercase min-h-[1.2em]">
@@ -238,39 +143,22 @@ export default function Tracks() {
             )}
           </h2>
         </div>
-        <p
-          className={`max-w-sm text-xs sm:text-sm text-zinc-400 leading-relaxed
-            transition-all duration-700 delay-300 ${headingInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-        >
-          Pick a domain, find your problem, build something that matters. All
-          domains are live for AI Manthan 2.0.
+        <p className={`max-w-sm text-xs sm:text-sm text-zinc-400 leading-relaxed transition-all duration-700 delay-300 ${headingInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          Pick a domain, find your problem, build something that matters. All domains are live for AI Manthan 2.0.
         </p>
       </div>
 
-      {/* ── Horizontally scrollable 3x2 track grid ── */}
-      <TrackGrid domains={domains} inView={gridInView} />
+      <div ref={gridRef}>
+        <TrackGrid domains={domains} inView={gridInView} />
+      </div>
 
-      {/* ── View All CTA ── */}
       <div className={`mt-10 sm:mt-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 transition-all duration-700 delay-500 ${gridInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-        <Link
-          href="/problem-statements"
-          className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:shadow-[0_0_24px_rgba(0,240,255,0.25)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
-        >
+        <Link href="/problem-statements" className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:shadow-[0_0_24px_rgba(0,240,255,0.25)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400">
           <span className="material-symbols-outlined text-[18px]">description</span>
           View All Problem Statements
-          <span
-            className="material-symbols-outlined text-[16px] transition-transform duration-300 group-hover:translate-x-0.5"
-            aria-hidden="true"
-          >
-            north_east
-          </span>
+          <span className="material-symbols-outlined text-[16px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true">north_east</span>
         </Link>
-        <a
-          href="https://www.canva.com/design/DAHWqmQgHnk/VyQbY2E0FinWzoYJsCHvFg/edit"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:border-emerald-400/50 hover:bg-emerald-500/10 hover:shadow-[0_0_24px_rgba(16,185,129,0.25)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
-        >
+        <a href="https://www.canva.com/design/DAHWqmQgHnk/VyQbY2E0FinWzoYJsCHvFg/edit" target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:border-emerald-400/50 hover:bg-emerald-500/10 hover:shadow-[0_0_24px_rgba(16,185,129,0.25)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400">
           <span className="material-symbols-outlined text-[18px]">open_in_new</span>
           PPT Format
         </a>
@@ -278,3 +166,5 @@ export default function Tracks() {
     </Section>
   )
 }
+
+export default Tracks

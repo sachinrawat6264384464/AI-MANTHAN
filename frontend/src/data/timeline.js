@@ -15,7 +15,7 @@ export const timeline = {
     },
     {
       phase: 'PHASE 02',
-      date: '10th Oct',
+      date: '14th Oct',
       dates: 'Sep 15, 23:59 IST',
       title: 'Round I Submissions Close',
       body: 'Submit your solution proposal before the deadline.',
