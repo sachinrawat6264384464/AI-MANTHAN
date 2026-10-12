@@ -1,6 +1,5 @@
 import { site, footer } from '../../data/site'
 import Link from 'next/link'
-import VisitorCounter from './VisitorCounter'
 import Icon from '../ui/Icon'
 
 /* ── Sleek Action Button ──── */
@@ -157,7 +156,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                9 AI Domains
+                13 AI Domains
               </li>
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
@@ -179,9 +178,9 @@ export default function Footer() {
               <FooterAction icon="download" href="/RuleBook/AI_Manthan_2.0_Round1_Rulebook.pdf" download="AI-Manthan-2.0-Round1-Rulebook.pdf">
                 Rulebook
               </FooterAction>
-              <FooterAction icon="group" href="/team">
+              {/* <FooterAction icon="group" href="/team">
                 Meet Team
-              </FooterAction>
+              </FooterAction> */}
               <FooterAction icon="install_mobile" onClick={() => window.dispatchEvent(new Event('open-install-prompt'))}>
                 Install App
               </FooterAction>
@@ -204,7 +203,6 @@ export default function Footer() {
         <div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-zinc-500">
           <div>{footer.legal}</div>
           <div className="flex items-center gap-4 sm:gap-5">
-            <VisitorCounter />
             {footer.meta.map((item, i) => (
               <span key={item} className="flex items-center gap-4 sm:gap-5">
                 {i > 0 && <span className="text-zinc-700">•</span>}

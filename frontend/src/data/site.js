@@ -22,7 +22,7 @@ export const site = {
     short: 'WhatsApp',
     cta: 'Join WhatsApp Community',
     icon: 'forum',
-    href: 'https://whatsapp.com/channel/0029Vb87c3eDJ6GyyNKLgx0L',
+    href: 'https://chat.whatsapp.com/HbuN2EbuIgOGqsj1JLyyJo',
   },
   nav: [
     { label: 'Home', href: '/#overview' },
